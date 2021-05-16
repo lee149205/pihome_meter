@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./docker/server/Dockerfile
+    ports:
+      - "62:80"
+    volumes:
+      - .:/var/www/html:cached
+      - ./docker/server/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./docker/server/conf/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
+    networks:
+      - web-network
+
+#  db:
+#      build:
+#          context: .
+#          dockerfile: ./docker/database/Dockerfile
+#      ports:
+#          - "3362:3306"
+#      volumes:
+#          - ./docker/database/my.cnf:/etc/mysql/my.cnf
+#      environment:
+#        MYSQL_ROOT_PASSWORD: 123456
+#        MYSQL_DATABASE: pihome_meter
+#        MYSQL_USER: root
+#        MYSQL_PASSWORD:
+#      networks:
+#        - web-network
+
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    volumes:
+      - .:/var/www/html:cached
+      - ./docker/php/conf/php.ini:/usr/local/etc/php/php.ini
+    ports:
+      - "9062:9000"
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    driver: bridge
